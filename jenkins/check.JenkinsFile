@@ -12,7 +12,6 @@ pipeline {
         stage('gradle-check') {
             steps {
                 script {
-                    sh 'docker --version'
                     sh './gradlew check --no-daemon --no-scan'
                 }
             }
