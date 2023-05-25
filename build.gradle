@@ -80,12 +80,12 @@ allprojects {
   afterEvaluate {
     project.tasks.withType(Test) { task ->
       // This is so hacky: now, by default, test tasks uses JUnit framework and always includes 'junit'
-      // JARs from the Gradle distribution (no ways to override this behavior). It causes JAR hell on test 
+      // JARs from the Gradle distribution (no ways to override this behavior). It causes JAR hell on test
       // classpath, example of the report:
       //
       //  jar1: /home/ubuntu/.gradle/caches/modules-2/files-2.1/junit/junit/4.13.2/8ac9e16d933b6fb43bc7f576336b8f4d7eb5ba12/junit-4.13.2.jar
       //  jar2: /home/ubuntu/.gradle/wrapper/dists/gradle-8.0-rc-1-all/2p8rgxxewg8l61n1p3vrzr9s8/gradle-8.0-rc-1/lib/junit-4.13.2.jar
-      // 
+      //
       task.getTestFrameworkProperty().convention(getProviderFactory().provider(() -> new JUnitTestFramework(task, task.getFilter(), false)));
     }
   }
@@ -648,4 +648,48 @@ tasks.withType(TestTaskReports).configureEach {
 
 tasks.named(JavaBasePlugin.CHECK_TASK_NAME) {
   dependsOn tasks.named('testAggregateTestReport', TestReport)
+}
+
+task checkCompatibility {
+  def repositoryUrls = project.hasProperty('repositoryUrls') ? project.property('repositoryUrls').split(',') : [];
+  String refToCheckout = project.hasProperty('refToCheckout') ?: 'main'
+  def failedComponents = []
+  doLast {
+    if (repositoryUrls.size() == 0) {
+      throw new IllegalArgumentException("repositoryUrls must be provided as arguments.")
+    }
+    def tempDir = File.createTempDir()
+    repositoryUrls.each { repositoryUrl ->
+      try {
+        exec {
+          commandLine 'git', 'clone', repositoryUrl, tempDir
+        }
+        exec {
+          def stdout = new ByteArrayOutputStream()
+          workingDir = tempDir
+          commandLine 'git', 'checkout', refToCheckout
+          commandLine './gradlew', 'assemble'
+          standardOutput stdout
+        }
+      } catch (ignored) {
+        failedComponents.add(repositoryUrl)
+        logger.info("Failed for component: ", repositoryUrl)
+      } finally {
+        tempDir.deleteDir()
+      }
+    }
+    if (!failedComponents.isEmpty()) {
+      println("Components incompatible with this change: $failedComponents")
+    } else {
+      println('Everything looks good!')
+    }
+  }
+}
+
+allprojects {project ->
+  project.afterEvaluate {
+    if (project.tasks.findByName('publishToMavenLocal')){
+      checkCompatibility.dependsOn(project.tasks.publishToMavenLocal)
+    }
+  }
 }
