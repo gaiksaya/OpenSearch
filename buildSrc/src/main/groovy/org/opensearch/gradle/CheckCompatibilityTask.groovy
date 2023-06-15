@@ -21,6 +21,11 @@ import java.nio.file.Paths
 
 class CheckCompatibilityTask extends DefaultTask {
 
+    public CheckCompatibilityTask() {
+        setDescription('Checks the compatibility with child components')
+    }
+    private static final String pluginUrl = 'https://raw.githubusercontent.com/opensearch-project/opensearch-plugins/main/plugins/.meta'
+
     @Input
     List repositoryUrls = project.hasProperty('repositoryUrls') ? project.property('repositoryUrls').split(',') : getRepoUrls()
 
@@ -77,8 +82,8 @@ class CheckCompatibilityTask extends DefaultTask {
         }
     }
 
-    protected static List getRepoUrls() {
-        def json = new JsonSlurper().parse('https://raw.githubusercontent.com/opensearch-project/opensearch-plugins/main/plugins/.meta'.toURL())
+    protected List getRepoUrls() {
+        def json = new JsonSlurper().parse(pluginUrl.toURL())
         def labels = json.projects.values()
         return labels as List
     }

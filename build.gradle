@@ -646,9 +646,7 @@ tasks.named(JavaBasePlugin.CHECK_TASK_NAME) {
   dependsOn tasks.named('testAggregateTestReport', TestReport)
 }
 
-tasks.register('checkCompatibility', CheckCompatibilityTask) {
-  description('Checks the compatibility with child components')
-}
+tasks.register('checkCompatibility', CheckCompatibilityTask)
 
 allprojects { project ->
   project.afterEvaluate {
