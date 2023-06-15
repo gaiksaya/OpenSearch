@@ -15,6 +15,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import org.gradle.internal.os.OperatingSystem
 
 import java.nio.file.Paths
 
@@ -37,24 +38,24 @@ class CheckCompatibilityTask extends DefaultTask {
 
     @TaskAction
     void checkCompatibility() {
-        println("Checking compatibility for: $repositoryUrls for $ref")
+        logger.info("Checking compatibility for: $repositoryUrls for $ref")
         repositoryUrls.parallelStream().forEach { repositoryUrl ->
             def tempDir = File.createTempDir()
-            def gradleScript = getGradleExec()
             try {
                 if (cloneAndCheckout(repositoryUrl, tempDir)) {
-                    if (repositoryUrl.toString().endsWithAny('notifications','notifications.git')) {
+                    if (repositoryUrl.toString().endsWithAny('notifications', 'notifications.git')) {
                         tempDir = Paths.get(tempDir.getAbsolutePath(), 'notifications')
                     }
                     project.exec {
                         workingDir = tempDir
                         def stdout = new ByteArrayOutputStream()
-                        commandLine gradleScript, 'assemble'
+                        executable = (OperatingSystem.current().isWindows()) ? 'gradlew.bat' : './gradlew'
+                        args 'assemble'
                         standardOutput stdout
                     }
                     compatibleComponents.add(repositoryUrl)
                 } else {
-                    println("Skipping compatibility check for $repositoryUrl")
+                    logger.lifecycle("Skipping compatibility check for $repositoryUrl")
                 }
             } catch (ex) {
                 failedComponents.add(repositoryUrl)
@@ -64,12 +65,16 @@ class CheckCompatibilityTask extends DefaultTask {
             }
         }
         if (!failedComponents.isEmpty()) {
-            println("Incompatible components: $failedComponents")
+            logger.lifecycle("Incompatible components: $failedComponents")
             logger.info("Compatible components: $compatibleComponents")
-        } else {
-            println("Compatible components: $compatibleComponents")
         }
-        println("Skipped components: $gitFailedComponents")
+        if (!gitFailedComponents.isEmpty()) {
+            logger.lifecycle("Components skipped due to git failures: $gitFailedComponents")
+            logger.info("Compatible components: $compatibleComponents")
+        }
+        if (!compatibleComponents.isEmpty()) {
+            logger.lifecycle("Compatible components: $compatibleComponents")
+        }
     }
 
     protected static List getRepoUrls() {
@@ -78,25 +83,24 @@ class CheckCompatibilityTask extends DefaultTask {
         return labels as List
     }
 
-    protected static String getGradleExec() {
-        if(System.properties['os.name'].toLowerCase().contains('windows')){
-            return 'gradlew.bat'
-        }
-        return './gradlew'
-    }
-
-    protected boolean cloneAndCheckout(repoUrl, directory){
-        def grgit = Grgit.clone(dir: directory, uri: repoUrl)
-        def remoteBranches = grgit.branch.list(mode: BranchListOp.Mode.REMOTE)
-        String targetBranch = 'origin/' + ref
-        if (remoteBranches.find { it.name == targetBranch } == null) {
+    protected boolean cloneAndCheckout(repoUrl, directory) {
+        try {
+            def grgit = Grgit.clone(dir: directory, uri: repoUrl)
+            def remoteBranches = grgit.branch.list(mode: BranchListOp.Mode.REMOTE)
+            String targetBranch = 'origin/' + ref
+            if (remoteBranches.find { it.name == targetBranch } == null) {
+                gitFailedComponents.add(repoUrl)
+                logger.info("$ref does not exist for $repoUrl. Skipping the compatibility check!!")
+                return false
+            } else {
+                logger.info("Checking out $targetBranch")
+                grgit.checkout(branch: targetBranch)
+                return true
+            }
+        } catch (ex) {
+            logger.error('Exception occurred during GitHub operations', ex)
             gitFailedComponents.add(repoUrl)
-            logger.info("$ref does not exist for $repoUrl. Skipping the compatibility check!!")
             return false
-        } else {
-            logger.info("Checking out $targetBranch")
-            grgit.checkout(branch: targetBranch)
-            return true
         }
     }
 }
