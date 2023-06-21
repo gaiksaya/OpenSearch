@@ -15,3 +15,5 @@ jobs:
         with:
           java-version: 11
           distribution: adopt
+      - name: get sha
+        run: echo ${{GITHUB_BASE_REF}}
