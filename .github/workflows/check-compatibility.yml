@@ -17,5 +17,5 @@ jobs:
           distribution: adopt
       - name: Check compatilibility
         run: |
-          echo "Checking compatilibility with base branch: ${GITHUB_BASE_REF}"
+          echo "Checking compatilibility with base branch:: ${GITHUB_BASE_REF}"
           ./gradlew checkCompatibility -Pref=${GITHUB_BASE_REF}
