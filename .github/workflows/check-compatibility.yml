@@ -16,4 +16,5 @@ jobs:
           java-version: 11
           distribution: adopt
       - name: get sha
-        run: echo ${{env.GITHUB_HEAD_REF}}
+        run: |
+          echo REF is: ${{ env.GITHUB_HEAD_REF }}
