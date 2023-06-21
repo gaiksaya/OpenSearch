@@ -17,4 +17,4 @@ jobs:
           distribution: adopt
       - name: get sha
         run: |
-          echo REF is: ${{ env.GITHUB_HEAD_REF }}
+          echo REF is: ${{ env.GITHUB_BASE_REF }}
