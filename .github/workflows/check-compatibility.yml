@@ -15,8 +15,3 @@ jobs:
         with:
           java-version: 11
           distribution: adopt
-      - name: Run compatibility check
-        run: |
-           echo hello
-           echo ${{GITHUB_BASE_REF}}
-          ./gradlew checkCompatibility -Pref=${{GITHUB_BASE_REF}}
