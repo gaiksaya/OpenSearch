@@ -1,6 +1,6 @@
-name: Releases
+name: Check compatibility
 
-on: [push]
+on: [pull_request]
 
 jobs:
 
@@ -18,11 +18,4 @@ jobs:
       - name: Run compatibility check
         run: |
            echo ${{GITHUB_BASE_REF}}
-          # ./gradlew checkCompatibility 
-      # - name: GitHub App token
-      #   id: github_app_token
-      #   uses: tibdex/github-app-token@v1.5.0
-      #   with:
-      #     app_id: ${{ secrets.APP_ID }}
-      #     private_key: ${{ secrets.APP_PRIVATE_KEY }}
-      #     installation_id: 22958780
+          ./gradlew checkCompatibility -Pref=${{GITHUB_BASE_REF}}
