@@ -15,17 +15,16 @@ jobs:
         with:
           java-version: 11
           distribution: adopt
-      - name: GitHub App token
-        id: github_app_token
-        uses: tibdex/github-app-token@v1.5.0
-        with:
-          app_id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.APP_PRIVATE_KEY }}
-          installation_id: 22958780
+      # - name: GitHub App token
+      #   id: github_app_token
+      #   uses: tibdex/github-app-token@v1.5.0
+      #   with:
+      #     app_id: ${{ secrets.APP_ID }}
+      #     private_key: ${{ secrets.APP_PRIVATE_KEY }}
+      #     installation_id: 22958780
       - name: Check compatilibility
         env: 
-          GRGIT_USER: ${{ secrets.GITHUB_TOKEN }}
+          GRGIT_USER: ${{ secrets.TOKEN }}
         run: |
-          export GRGIT_USER=${secrets.GITHUB_TOKEN}
           echo "Checking compatilibility with base branch: ${GITHUB_BASE_REF}"
           ./gradlew checkCompatibility -Pref=${GITHUB_BASE_REF}
