@@ -17,6 +17,8 @@ jobs:
           java-version: 11
           distribution: adopt
       - name: Check compatilibility
-        run: ./gradlew checkCompatibility --info
+        env:
+          GRGIT_USER: ${{ SECRETS.TOKEN }}
+        run: ./gradlew checkCompatibility
       - name: check remote
         run: git remote -v
