@@ -91,6 +91,7 @@ class CheckCompatibilityTask extends DefaultTask {
         inputList.replaceAll { element ->
             element.replace("git@github.com:", "https://github.com/")
         }
+        return inputList
     }
 
     protected boolean cloneAndCheckout(repoUrl, directory) {
