@@ -83,6 +83,7 @@ class CheckCompatibilityTask extends DefaultTask {
         def json = new JsonSlurper().parse(REPO_URL.toURL())
         def labels = json.projects.values()
         def repoUrls = replaceSSH(labels as List)
+        println(repoUrls)
         return repoUrls
     }
 
