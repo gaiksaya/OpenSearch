@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Get Task
-        run: ./gradlew checkCompatibility -PrepositoryUrls=https://github.com/opensearch-project/common-utils > /tmp/gradlew-check.out
+        run: ./gradlew checkCompatibility -PrepositoryUrls=https://github.com/opensearch-project/common-utils | tee /tmp/gradlew-check.out
       - name: Get comp
         run: cat /tmp/gradlew-check.out | tail -n 7
       - uses: actions/upload-artifact@v3
