@@ -82,12 +82,11 @@ class CheckCompatibilityTask extends DefaultTask {
     protected static List getRepoUrls() {
         def json = new JsonSlurper().parse(REPO_URL.toURL())
         def labels = json.projects.values()
-        def repoUrls = replaceSshWithHttpsInPlace(labels as List)
-        println(repoUrls)
+        def repoUrls = replaceSshWithHttps(labels as List)
         return repoUrls
     }
 
-    protected static replaceSshWithHttpsInPlace(List<String> inputList) {
+    protected static replaceSshWithHttps(List<String> inputList) {
         inputList.replaceAll { element ->
             element.replace("git@github.com:", "https://github.com/")
         }
