@@ -14,4 +14,4 @@ jobs:
         run: ./gradlew checkCompatibility -PrepositoryUrls=https://github.com/opensearch-project/common-utils | tee /tmp/gradlew-check.out
       - name: Get comp
         run: |
-          grep 'Compatible components: \| Incompatible components' -A 2 -B 3 gradlew-check.out
+          grep 'Compatible components: \| Incompatible components' -A 2 -B 3 /tmp/gradlew-check.out
