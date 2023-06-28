@@ -14,7 +14,7 @@ jobs:
       - name: Get results
         id: get_results
         run: |
-          echo "results=$(grep 'Compatible components: \| Incompatible components' -A 2 -B 3 /tmp/gradlew-check.out)" >> "$GITHUB_OUTPUT"
+          echo "results=\"$(grep 'Compatible components: \| Incompatible components' -A 2 -B 3 /tmp/gradlew-check.out)\" " >> "$GITHUB_OUTPUT"
       - name: Add comment on the PR
         uses: peter-evans/create-or-update-comment@v3
         with:
