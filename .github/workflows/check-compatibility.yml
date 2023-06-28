@@ -13,7 +13,9 @@ jobs:
         run: ./gradlew checkCompatibility -PrepositoryUrls=https://github.com/opensearch-project/common-utils | tee /tmp/gradlew-check.out
       - name: Get results
         id: get_results
-        run: echo results=$(grep 'Compatible components \| Incompatible components' -A 2 -B 3 /tmp/gradlew-check.out) >> "$GITHUB_OUTPUT"
+        run: |
+          echo results=$(grep 'Compatible components \| Incompatible components' -A 2 -B 3 /tmp/gradlew-check.out) >> "$GITHUB_OUTPUT"
+          echo ${{ github.event.number }}
       - name: Add comment on the PR
         uses: peter-evans/create-or-update-comment@v3
         with:
