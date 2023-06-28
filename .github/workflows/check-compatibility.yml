@@ -8,10 +8,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Get Task
+      - uses: actions/checkout@v3
+      - name: Run compatibility task
         run: ./gradlew checkCompatibility -PrepositoryUrls=https://github.com/opensearch-project/common-utils | tee /tmp/gradlew-check.out
-      - name: Get comp
+      - name: Get results
+        id: get_results
         run: |
-          grep 'Compatible components: \| Incompatible components' -A 2 -B 3 /tmp/gradlew-check.out
+          echo "results=$(grep 'Compatible components: \| Incompatible components' -A 2 -B 3 /tmp/gradlew-check.out)" >> "$GITHUB_OUTPUT"
+      - name: Add comment on the PR
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          token: ${{ SECRETS.TOKEN }}
+          issue-number: ${{ github.event.number }}
+          body: ${{ steps.get_results.outputs.results }}
+
+
+
