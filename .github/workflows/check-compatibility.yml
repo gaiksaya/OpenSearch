@@ -13,7 +13,7 @@ jobs:
         run: ./gradlew checkCompatibility -PrepositoryUrls=https://github.com/opensearch-project/common-utils | tee $HOME/gradlew-check.out
       - name: Get results
         run: |
-          echo 'Compatibility status: \n ```' > ${{ github.workspace }}/results.txt
+          echo 'Compatibility status:' > ${{ github.workspace }}/results.txt && echo '```' >> ${{ github.workspace }}/results.txt
           grep -e 'Compatible components' -e 'Incompatible components' -e 'Components skipped' -A 2 -B 3 $HOME/gradlew-check.out >> "${{ github.workspace }}/results.txt"
           echo '```' >> ${{ github.workspace }}/results.txt
       - name: Add comment on the PR
