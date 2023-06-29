@@ -13,11 +13,11 @@ jobs:
         run: ./gradlew checkCompatibility -PrepositoryUrls=https://github.com/opensearch-project/common-utils | tee $HOME/gradlew-check.out
       - name: Get results
         run: |
-          grep -e 'Compatible components' -e 'Incompatible components' -e 'Components skipped' -A 2 -B 3 $HOME/gradlew-check.out > $HOME/results.txt
-          cat $HOME/results.txt
+          grep -e 'Compatible components' -e 'Incompatible components' -e 'Components skipped' -A 2 -B 3 $HOME/gradlew-check.out > "${{ github.workspace }}/results.txt"
+          cat "${{ github.workspace }}/results.txt"
       - name: Add comment on the PR
         uses: peter-evans/create-or-update-comment@v3
         with:
           token: ${{ SECRETS.TOKEN }}
           issue-number: ${{ github.event.number }}
-          body-path: $HOME/results.txt
+          body-path: "${{ github.workspace }}/results.txt"
