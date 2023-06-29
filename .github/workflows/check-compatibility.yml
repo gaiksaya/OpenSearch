@@ -12,8 +12,9 @@ jobs:
       - name: Run compatibility task
         run: ./gradlew checkCompatibility -PrepositoryUrls=https://github.com/opensearch-project/common-utils | tee /tmp/gradlew-check.out
       - name: Get results
-        id: get_results
-        run: grep 'Compatible components \| Incompatible components' -A 2 -B 3 /tmp/gradlew-check.out > /tmp/comment.out
+        run: |
+          grep 'Compatible components \| Incompatible components' -A 2 -B 3 /tmp/gradlew-check.out > /tmp/comment.out
+          cat /tmp/comment.out
       - name: Add comment on the PR
         uses: peter-evans/create-or-update-comment@v3
         with:
