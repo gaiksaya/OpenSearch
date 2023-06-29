@@ -13,11 +13,12 @@ jobs:
         run: ./gradlew checkCompatibility -PrepositoryUrls=https://github.com/opensearch-project/common-utils | tee $HOME/gradlew-check.out
       - name: Get results
         run: |
-          grep 'Compatible components \| Incompatible components' -A 2 -B 3 $HOME/gradlew-check.out > $HOME/comment.out
-          cat $HOME/comment.out
-      - name: Add comment on the PR
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          token: ${{ SECRETS.TOKEN }}
-          issue-number: ${{ github.event.number }}
-          body-path: $HOME/comment.out
+          cat $HOME/gradlew-check.out
+          // grep 'Compatible components \| Incompatible components' -A 2 -B 3 $HOME/gradlew-check.out > $HOME/comment.out
+          // cat $HOME/comment.out
+#       - name: Add comment on the PR
+#         uses: peter-evans/create-or-update-comment@v3
+#         with:
+#           token: ${{ SECRETS.TOKEN }}
+#           issue-number: ${{ github.event.number }}
+#           body-path: $HOME/comment.out
