@@ -86,6 +86,7 @@ class CheckCompatibilityTask extends DefaultTask {
         Yaml parser = new Yaml()
         def manifest = parser.load(yamlContent)
         List repoUrls = manifest.components.collect { it.repository }
+        repoUrls.remove('https://github.com/opensearch-project/OpenSearch.git')
         return repoUrls
     }
 
