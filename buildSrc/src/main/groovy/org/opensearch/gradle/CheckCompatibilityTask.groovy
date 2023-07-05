@@ -16,15 +16,16 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.os.OperatingSystem
+import org.yaml.snakeyaml.Yaml
 
 import java.nio.file.Paths
 
 class CheckCompatibilityTask extends DefaultTask {
 
-    static final String REPO_URL = 'https://raw.githubusercontent.com/opensearch-project/opensearch-plugins/main/plugins/.meta'
+    static final String REPO_URL = 'https://raw.githubusercontent.com/opensearch-project/opensearch-build/main/manifests/3.0.0/opensearch-3.0.0.yml'
 
     @Input
-    List repositoryUrls = project.hasProperty('repositoryUrls') ? project.property('repositoryUrls').split(',') : getRepoUrls()
+    List repositoryUrls = project.hasProperty('repositoryUrls') ? project.property('repositoryUrls').split(',') : getRepoUrlsFromManifest()
 
     @Input
     String ref = project.hasProperty('ref') ? project.property('ref') : 'main'
@@ -79,18 +80,13 @@ class CheckCompatibilityTask extends DefaultTask {
         }
     }
 
-    protected static List getRepoUrls() {
-        def json = new JsonSlurper().parse(REPO_URL.toURL())
-        def labels = json.projects.values()
-        def repoUrls = replaceSshWithHttps(labels as List)
+    protected static List getRepoUrlsFromManifest() {
+        def url = new URL(REPO_URL)
+        def yamlContent = url.text
+        Yaml parser = new Yaml()
+        def manifest = parser.load(yamlContent)
+        List repoUrls = manifest.components.collect { it.repository }
         return repoUrls
-    }
-
-    protected static replaceSshWithHttps(List<String> inputList) {
-        inputList.replaceAll { element ->
-            element.replace("git@github.com:", "https://github.com/")
-        }
-        return inputList
     }
 
     protected boolean cloneAndCheckout(repoUrl, directory) {
