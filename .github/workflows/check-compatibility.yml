@@ -2,7 +2,7 @@
 name: Check Compatibility
 
 on:
-  pull_request
+  pull_request_target
 
 jobs:
   build:
@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Run compatibility task
         run: ./gradlew checkCompatibility -i | tee $HOME/gradlew-check.out
