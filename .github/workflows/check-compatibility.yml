@@ -27,7 +27,12 @@ jobs:
           echo "### Incompatible components" >> "${{ github.workspace }}/results.txt" && grep -e 'Incompatible component' $HOME/gradlew-check.out | sed -e 's/Incompatible component: \[\(.*\)\]/- \1/' >> "${{ github.workspace }}/results.txt"
           echo "### Skipped components"      >> "${{ github.workspace }}/results.txt" && grep -e 'Skipped component'      $HOME/gradlew-check.out | sed -e 's/Skipped component: \[\(.*\)\]/- \1/'      >> "${{ github.workspace }}/results.txt"
           echo "### Compatible components"   >> "${{ github.workspace }}/results.txt" && grep -e 'Compatible component'   $HOME/gradlew-check.out | sed -e 's/Compatible component: \[\(.*\)\]/- \1/'   >> "${{ github.workspace }}/results.txt"
-          echo "results=$(cat ${{ github.workspace }}/results.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload results
+        uses: actions/upload-artifact@v2
+        with:
+          name: results.txt
+          path: ${{ github.workspace }}/results.txt
 
   add-comment:
     needs: [build]
@@ -35,8 +40,12 @@ jobs:
       pull-requests: write # to create or update comment (peter-evans/create-or-update-comment)
     runs-on: ubuntu-latest
     steps:
+      - name: Download results
+        uses: actions/download-artifact@v2
+        with:
+          name: results.txt
       - name: Add comment on the PR
         uses: peter-evans/create-or-update-comment@v3
         with:
           issue-number: ${{ github.event.number }}
-          body-path: "${{ needs.build.outputs.results }}"
+          body-path: results.txt
