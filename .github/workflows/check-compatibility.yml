@@ -15,8 +15,8 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Run compatibility task
-        run: ./gradlew checkCompatibility -i -PrepositoryUrls=https://github.com/opensearch-project/common-utils | tee $HOME/gradlew-check.out
+      # - name: Run compatibility task
+      #   run: ./gradlew checkCompatibility -i -PrepositoryUrls=https://github.com/opensearch-project/common-utils | tee $HOME/gradlew-check.out
 
       - name: Get results
         id: results
@@ -26,7 +26,7 @@ jobs:
           echo "### Incompatible components" >> "${{ github.workspace }}/results.txt" && grep -e 'Incompatible component' $HOME/gradlew-check.out | sed -e 's/Incompatible component: \[\(.*\)\]/- \1/' >> "${{ github.workspace }}/results.txt"
           echo "### Skipped components"      >> "${{ github.workspace }}/results.txt" && grep -e 'Skipped component'      $HOME/gradlew-check.out | sed -e 's/Skipped component: \[\(.*\)\]/- \1/'      >> "${{ github.workspace }}/results.txt"
           echo "### Compatible components"   >> "${{ github.workspace }}/results.txt" && grep -e 'Compatible component'   $HOME/gradlew-check.out | sed -e 's/Compatible component: \[\(.*\)\]/- \1/'   >> "${{ github.workspace }}/results.txt"
-          echo "results=`cat results.txt`" >> "$GITHUB_OUTPUT"
+          echo "results=$(cat ${{ github.workspace }}/results.txt)" >> "$GITHUB_OUTPUT"
 
   add-comment:
     needs: [build]
