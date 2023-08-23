@@ -21,6 +21,7 @@ jobs:
       - name: Get results
         id: results
         run: |
+          echo 'Compatible components: [https://github.com/opensearch-project/common-utils]' > $HOME/gradlew-check.out
           echo '## Compatibility status:' > "${{ github.workspace }}/results.txt"
           echo "Checks if related components are compatible with change $(git rev-parse --short HEAD)" >> "${{ github.workspace }}/results.txt"
           echo "### Incompatible components" >> "${{ github.workspace }}/results.txt" && grep -e 'Incompatible component' $HOME/gradlew-check.out | sed -e 's/Incompatible component: \[\(.*\)\]/- \1/' >> "${{ github.workspace }}/results.txt"
