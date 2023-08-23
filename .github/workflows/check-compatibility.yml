@@ -9,7 +9,6 @@ jobs:
     # if: github.repository == 'opensearch-project/OpenSearch'
     permissions:
       contents: read # to fetch code (actions/checkout)
-      pull-requests: write # to create or update comment (peter-evans/create-or-update-comment)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -20,23 +19,24 @@ jobs:
         run: ./gradlew checkCompatibility -i -PrepositoryUrls=https://github.com/opensearch-project/common-utils | tee $HOME/gradlew-check.out
 
       - name: Get results
+        id: results
         run: |
           echo '## Compatibility status:' > "${{ github.workspace }}/results.txt"
           echo "Checks if related components are compatible with change $(git rev-parse --short HEAD)" >> "${{ github.workspace }}/results.txt"
           echo "### Incompatible components" >> "${{ github.workspace }}/results.txt" && grep -e 'Incompatible component' $HOME/gradlew-check.out | sed -e 's/Incompatible component: \[\(.*\)\]/- \1/' >> "${{ github.workspace }}/results.txt"
           echo "### Skipped components"      >> "${{ github.workspace }}/results.txt" && grep -e 'Skipped component'      $HOME/gradlew-check.out | sed -e 's/Skipped component: \[\(.*\)\]/- \1/'      >> "${{ github.workspace }}/results.txt"
           echo "### Compatible components"   >> "${{ github.workspace }}/results.txt" && grep -e 'Compatible component'   $HOME/gradlew-check.out | sed -e 's/Compatible component: \[\(.*\)\]/- \1/'   >> "${{ github.workspace }}/results.txt"
+          echo "results=`cat results.txt`" >> "$GITHUB_OUTPUT"
 
-      # - name: GitHub App token
-      #   id: github_app_token
-      #   uses: tibdex/github-app-token@v1.6.0
-      #   with:
-      #     app_id: ${{ secrets.APP_ID }}
-      #     private_key: ${{ secrets.APP_PRIVATE_KEY }}
-      #     installation_id: 22958780
-
+  add-comment:
+    needs: [build]
+    permissions:
+      contents: read # to fetch code (actions/checkout)
+      pull-requests: write # to create or update comment (peter-evans/create-or-update-comment)
+    runs-on: ubuntu-latest
+    steps:
       - name: Add comment on the PR
         uses: peter-evans/create-or-update-comment@v3
         with:
           issue-number: ${{ github.event.number }}
-          body-path: "${{ github.workspace }}/results.txt"
+          body-path: "${{ needs.build.outputs.results }}"
