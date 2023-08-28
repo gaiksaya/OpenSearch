@@ -55,7 +55,7 @@ This project is licensed under the [Apache v2.0 License](LICENSE.txt).
 
 Copyright OpenSearch Contributors. See [NOTICE](NOTICE.txt) for details.
 
-## Trademark
+## Trademark!
 
 OpenSearch is a registered trademark of Amazon Web Services.
 
