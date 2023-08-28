@@ -38,7 +38,7 @@
 * [Release Management](RELEASING.md)
 * [Admin Responsibilities](ADMINS.md)
 * [Testing](TESTING.md)
-* [Security](SECURITY.md).
+* [Security](SECURITY.md)
 
 ## Code of Conduct!
 
