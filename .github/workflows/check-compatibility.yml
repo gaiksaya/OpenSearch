@@ -44,19 +44,19 @@ jobs:
           name: results.txt
           path: ${{ github.workspace }}/results.txt
 
-  add-comment:
-    needs: [check-compatibility]
-    permissions:
-      pull-requests: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download results
-        uses: actions/download-artifact@v3
-        with:
-          name: results.txt
+  # add-comment:
+  #   needs: [check-compatibility]
+  #   permissions:
+  #     pull-requests: write
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Download results
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: results.txt
 
-      - name: Add comment on the PR
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          issue-number: ${{ github.event.number }}
-          body-path: results.txt
+  #     - name: Add comment on the PR
+  #       uses: peter-evans/create-or-update-comment@v3
+  #       with:
+  #         issue-number: ${{ github.event.number }}
+  #         body-path: results.txt
