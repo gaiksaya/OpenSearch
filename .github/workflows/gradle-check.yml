@@ -87,7 +87,7 @@ jobs:
           files: ./codeCoverage.xml
 
       - name: Create Comment Success
-        if: ${{ github.event_name == 'pull_request_target' && success() && env.result == 'SUCCESS' }} && steps.changed-files-specific.outputs.any_changed == 'true'
+        if: ${{ github.event_name == 'pull_request_target' && success() && env.result == 'SUCCESS' && steps.changed-files-specific.outputs.any_changed == 'true' }}
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ env.pr_number }}
