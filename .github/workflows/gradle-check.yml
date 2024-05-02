@@ -110,7 +110,7 @@ jobs:
           fi
 
       - name: Create Comment Flaky
-        if: ${{ github.event_name == 'pull_request_target' && success() && env.result != 'SUCCESS' }} && steps.changed-files-specific.outputs.any_changed == 'true'
+        if: ${{ github.event_name == 'pull_request_target' && success() && env.result != 'SUCCESS' && steps.changed-files-specific.outputs.any_changed == 'true' }}
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ env.pr_number }}
@@ -120,7 +120,7 @@ jobs:
             Please review all [flaky tests](https://github.com/opensearch-project/OpenSearch/blob/main/DEVELOPER_GUIDE.md#flaky-tests) that succeeded after retry and create an issue if one does not already exist to track the flaky failure.
 
       - name: Create Comment Failure
-        if: ${{ github.event_name == 'pull_request_target' && failure() }} && steps.changed-files-specific.outputs.any_changed == 'true'
+        if: ${{ github.event_name == 'pull_request_target' && failure() && steps.changed-files-specific.outputs.any_changed == 'true' }}
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ env.pr_number }}
@@ -130,7 +130,7 @@ jobs:
             Please examine the workflow log, locate, and copy-paste the failure(s) below, then iterate to green. Is the failure [a flaky test](https://github.com/opensearch-project/OpenSearch/blob/main/DEVELOPER_GUIDE.md#flaky-tests) unrelated to your change?
 
       - name: Create Issue On Push Failure
-        if: ${{ github.event_name == 'push' && failure() }} && steps.changed-files-specific.outputs.any_changed == 'true'
+        if: ${{ github.event_name == 'push' && failure() && steps.changed-files-specific.outputs.any_changed == 'true' }}
         uses: dblock/create-a-github-issue@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
