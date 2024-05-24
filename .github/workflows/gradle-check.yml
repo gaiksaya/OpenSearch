@@ -17,7 +17,7 @@ jobs:
     if: github.repository == 'opensearch-project/OpenSearch'
     runs-on: ubuntu-latest
     outputs: 
-      RUN_GRADLE_CHECK: ${{steps.changed-files-specific.outputs.any_changed}}
+      RUN_GRADLE_CHECK: ${{ steps.changed-files-specific.outputs.any_changed }}
     steps:
     - name: Get changed files
       id: changed-files-specific
